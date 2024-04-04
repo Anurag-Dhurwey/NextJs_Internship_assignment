@@ -78,27 +78,6 @@ const Page = () => {
           filename: file.name,
         });
 
-        // const formData = new FormData();
-        // formData.append('file', file);
-      
-        // const uploadedAssetRes:{result:boolean, res:{_id:string}} = await axios.post("/api/upload/asset", formData, {
-        //   onUploadProgress: (progressEvent) => {
-        //     if(progressEvent.total){
-        //       const percentCompleted = Math.round(
-        //         (progressEvent.loaded * 100) / progressEvent.total
-        //       );
-        //       console.log(progressEvent)
-        //       // onUploadProgress(percentCompleted);
-        //     }
-      
-        //   },
-        //   headers: {
-        //     'Content-Type': 'multipart/form-data',
-        //   }
-        // });
-    
-        // const {result,res}=uploadedAssetRes
-
 
         if (uploadedAssetRes) {
           const doc= {

@@ -43,19 +43,19 @@ export default {
       title: 'Link',
       type: 'url',
     },
-    {
-      name: 'liked_posts',
-      title: 'Liked Posts',
-      type: 'array',
-      of: [
-        {
-          name: 'post',
-          title: 'post_data',
-          type: 'object',
-          fields: [{name:"post",type:"post_ref"}],
-        },
-      ],
-    },
+    // {
+    //   name: 'liked_posts',
+    //   title: 'Liked Posts',
+    //   type: 'array',
+    //   of: [
+    //     {
+    //       name: 'post',
+    //       title: 'post_data',
+    //       type: 'object',
+    //       fields: [{name:"post",type:"post_ref"}],
+    //     },
+    //   ],
+    // },
   ],
 }
 

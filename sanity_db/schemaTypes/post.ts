@@ -31,17 +31,17 @@ export default {
       title: 'Tag',
       type: 'string',
     },
-    {
-      name: 'likes',
-      title: 'Likes',
-      type: 'array',
-      of: [{type: 'like'}],
-    },
-    {
-      name: 'comments',
-      title: 'Comments',
-      type: 'array',
-      of: [{type: 'comment'}],
-    },
+    // {
+    //   name: 'likes',
+    //   title: 'Likes',
+    //   type: 'array',
+    //   of: [{type: 'like'}],
+    // },
+    // {
+    //   name: 'comments',
+    //   title: 'Comments',
+    //   type: 'array',
+    //   of: [{type: 'comment'}],
+    // },
   ],
 }
