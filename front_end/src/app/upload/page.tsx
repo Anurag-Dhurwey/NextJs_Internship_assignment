@@ -13,6 +13,7 @@ import { SanityAssetDocument } from "next-sanity";
 import { v4 } from "uuid";
 import { getAssetId } from "@/utilities/functions/getAssetId";
 import { imgFormates, videoFormates } from "@/components/media/Media";
+import { getAdminData } from "@/utilities/functions/getAdminData";
 
 const Page = () => {
   const dispatch = useAppDispatch();
@@ -144,17 +145,13 @@ const Page = () => {
     }
   };
 
-  function withUseEffect() {
+ async function withUseEffect() {
     if (session) {
-      // socketIoConnection({
-      //   session,
-      //   dispatch,
-      //   admin,
-      //   message,
-      // });
+      await getAdminData({ dispatch, admin, session });
       if (!meadia_items.length) {
         getMediaItems({ dispatch, messageApi });
       }
+
     }
   }
   useEffect(() => {

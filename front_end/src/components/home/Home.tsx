@@ -39,7 +39,6 @@ const Home = () => {
   return (
     <div className={style.main}>
       {contextHolder}
-      {/* <div className="w-[15%] h-screen bg-slate-600"></div> */}
       <div className={style.secondDiv}>
         {media_Items.map((item, i) => {
           const { meadiaFile, postedBy } = item;
@@ -50,7 +49,6 @@ const Home = () => {
                 <span className=" absolute top-0 right-0 flex justify-center items-start gap-x-4 rounded-xl">
                   <span className="flex items-center pt-1 gap-x-[2px] min-[430px]:pr-1">
                     <LikesButton meadia_item={item} />
-                    {/* <p style={{fontSize:'small'}}>{item.likes ? item.likes.length : 0}</p> */}
                   </span>
                   <MobileViewMetaData
                     meadia_item={item}

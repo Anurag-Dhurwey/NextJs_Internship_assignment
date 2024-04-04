@@ -16,17 +16,9 @@ const Page = ({ params }: { params: { slug: string } }) => {
   const slug = params.slug;
   const data: profileSlugObjType = JSON.parse(decodeURIComponent(slug));
 
-  function withUseEffect() {
-    // if (session) {
-    //   // socketIoConnection({
-    //   //   session,
-    //   //   dispatch,
-    //   //   admin,
-    //   //   message: message,
-    //   // });
-    // }
+ async function withUseEffect() {
     if (!admin._id) {
-      getAdminData({ dispatch, admin, session, messageApi: message });
+      await getAdminData({ dispatch, admin, session, messageApi: message });
     }
   }
 

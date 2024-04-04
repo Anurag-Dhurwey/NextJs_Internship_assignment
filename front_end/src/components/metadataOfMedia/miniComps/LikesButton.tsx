@@ -80,6 +80,7 @@ const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
 
   async function withUseEffect() {
     await getAdminData({ dispatch, admin, session });
+    if(!session||!admin._id) return
     const doc = await client.fetch(
       `*[_type == "likes" && post._ref == "${meadia_item._id}" && likedBy._ref == "${admin._id}"]{_id}`
     );

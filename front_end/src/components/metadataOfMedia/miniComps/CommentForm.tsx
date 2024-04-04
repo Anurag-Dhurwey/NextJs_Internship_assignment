@@ -13,8 +13,8 @@ import { getAdminData } from "@/utilities/functions/getAdminData";
 const CommentForm = ({ meadia_item, setComments }: props) => {
   const dispatch = useAppDispatch();
   const admin = useAppSelector((state) => state.hooks.admin);
-  const media_Items = useAppSelector((state) => state.hooks.media_Items);
   const { data: session } = useSession();
+  const media_Items = useAppSelector((state) => state.hooks.media_Items);
   const [form, setForm] = useState("");
   const [onSubmit, setOnsubmit] = useState<boolean>(false);
 
