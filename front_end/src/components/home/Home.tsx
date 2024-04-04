@@ -50,7 +50,7 @@ const Home = () => {
                 <span className=" absolute top-0 right-0 flex justify-center items-start gap-x-4 rounded-xl">
                   <span className="flex items-center pt-1 gap-x-[2px] min-[430px]:pr-1">
                     <LikesButton meadia_item={item} />
-                    <p style={{fontSize:'small'}}>{item.likes ? item.likes.length : 0}</p>
+                    {/* <p style={{fontSize:'small'}}>{item.likes ? item.likes.length : 0}</p> */}
                   </span>
                   <MobileViewMetaData
                     meadia_item={item}
