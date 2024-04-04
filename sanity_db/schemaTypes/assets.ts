@@ -1,18 +1,18 @@
 export default {
-  name: 'asset',
+  name: 'assets',
   type: 'document',
   title: 'Asset',
   fields: [
     {
       name: 'postedBy',
       title: 'PostedBy',
-      type: 'user_ref',
+      type: 'reference',
+      to: [{ type: 'user' }],
     },
     {
-      name: 'assets',
-      type: 'array',
-      title: 'Assets',
-      of: [{type: 'file'}],
+      name: 'file',
+      type: 'file',
+      title: 'File',
     },
   ],
 }

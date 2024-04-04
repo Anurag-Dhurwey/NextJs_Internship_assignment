@@ -5,7 +5,7 @@
   align-items: center;
 }
 
-.form input {
+.form input,.form textarea {
   background-color: rgba(105, 105, 105, 0.534);
   width: 400px;
   border-radius: 10px;
@@ -64,4 +64,19 @@
   border-radius: 0.25rem /* 4px */;
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+
+.uploadingModal{
+  position: fixed;
+  top: 0%;
+  bottom: 0%;
+  left: 0%;
+  right: 0%;
+  min-height: 90vh;
+  min-width: 100vw;
+  background-color: #8f8e8ea9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

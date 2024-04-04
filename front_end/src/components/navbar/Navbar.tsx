@@ -74,8 +74,6 @@ const slug=encodeURIComponent(JSON.stringify({...session?.user}))
                   <button>
                     <Link href={`/profile/${slug}`}>Profile</Link>
                   </button>
-                  <button ><Link href={'/profile/connections'}>Connections</Link></button>
-                  {/* <button ><Link href={'/profile/connections'}>connections</Link></button> */}
                   <button onClick={() => signOut()}>Logout</button>
                 </>
               )}
