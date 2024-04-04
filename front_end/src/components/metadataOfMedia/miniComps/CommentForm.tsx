@@ -8,8 +8,9 @@ import { comment_ref, media_Item } from "@/typeScript/basics";
 import { message } from "antd";
 import { client } from "@/utilities/sanityClient";
 import { v4 } from "uuid";
+import { getAdminData } from "@/utilities/functions/getAdminData";
 
-const CommentForm = ({ meadia_item }: { meadia_item: media_Item }) => {
+const CommentForm = ({ meadia_item, setComments }: props) => {
   const dispatch = useAppDispatch();
   const admin = useAppSelector((state) => state.hooks.admin);
   const media_Items = useAppSelector((state) => state.hooks.media_Items);
@@ -20,6 +21,7 @@ const CommentForm = ({ meadia_item }: { meadia_item: media_Item }) => {
   const onHnandleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const uuid = v4();
+    await getAdminData({ dispatch, admin, session });
     // console.log(uuid);
     const formetedFormText = form
       .split(/\s+/)
@@ -29,47 +31,25 @@ const CommentForm = ({ meadia_item }: { meadia_item: media_Item }) => {
     if (formetedFormText.length >= 3 && !onSubmit) {
       setOnsubmit(true);
       try {
-        const res = await client
-          .patch(meadia_item._id)
-          .setIfMissing({ comments: [] })
-          .insert("after", "comments[-1]", [
-            {
-              _key: uuid,
-              comment: form,
-              postedBy: { _type: "reference", _ref: admin._id },
-            },
-          ])
-          .commit();
+        const cmt = await client.create({
+          _type: "comments",
+          postedBy: {
+            _type: "reference",
+            _ref: admin._id,
+          },
+          post: {
+            _type: "reference",
+            _ref: meadia_item._id,
+          },
+          comment: form,
+        });
 
-        const element: comment_ref | undefined = res.comments.find(
-          (item: comment_ref) => item._key == uuid
-        );
+        if (cmt && admin._id && admin.name && admin.email) {
+          cmt.postedBy = { name: admin.name, email: admin.email } as any;
+          setComments((pre) => [cmt as any, ...pre]);
 
-        if (element?._key && admin._id && admin.name && admin.email) {
-          console.log(element);
-          const doc = {
-            _key: element?._key,
-            comment: form,
-            postedBy: {
-              _id: admin._id,
-              name: admin.name,
-              email: admin.email,
-            },
-          };
-          const updatedMeadia_Items = media_Items.map((item) => {
-            if (item._id == res._id) {
-              return {
-                ...item,
-                comments: item.comments ? [...item.comments, doc] : [doc],
-              };
-            } else {
-              return item;
-            }
-          });
-
-          dispatch(set_media_items([...updatedMeadia_Items]));
           setForm("");
-          console.log(res);
+          // console.log(res);
         }
       } catch (error) {
         console.error(error);
@@ -118,3 +98,19 @@ const CommentForm = ({ meadia_item }: { meadia_item: media_Item }) => {
 };
 
 export default CommentForm;
+
+interface props {
+  meadia_item: media_Item;
+  setComments: React.Dispatch<
+    React.SetStateAction<
+      {
+        postedBy: {
+          email: string;
+          name: string;
+        };
+        comment: string;
+        _id: string;
+      }[]
+    >
+  >;
+}

@@ -29,29 +29,12 @@ export const getAdminData = async ({
           `*[(_type=="user" && email=="${session.user.email}")]{_type,_id,bio,desc,link,image}`
         );
         const user = res[0];
-        const conRes: conType[] = await client.fetch(
-          `*[(_type=="connections" && user._ref=="${user._id}")]{user,_id,requests_got[]{_key,user->{_id,name,email,image}},requests_sent[]{_key,user->{_id,name,email,image}},connected[]{_key,user->{_id,name,email,image}}}`
-        );
-        const connections = conRes[0];
-        console.log({ user, connections });
         if (user) {
           const { _id, bio, desc, link } = user;
           const obj={
             _id: _id,
             name: session.user.name,
             email: session.user.email,
-            connections: {
-              _id: connections?._id,
-              connected: connections?.connected
-                ? [...connections?.connected]
-                : [],
-              requests_got: connections?.requests_got
-                ? [...connections?.requests_got]
-                : [],
-              requests_sent: connections?.requests_sent
-                ? [...connections.requests_sent]
-                : [],
-            },
             image: user.image ? user.image : session.user.image,
             bio: bio ? bio : undefined,
             desc: desc ? desc : undefined,
@@ -83,9 +66,4 @@ type resType = {
   _type: string;
 };
 
-type conType = {
-  _id: string;
-  connected?: usr_and_key_in_array[];
-  requests_got?: usr_and_key_in_array[];
-  requests_sent?: usr_and_key_in_array[];
-};
+

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
 import style from "./commentBox.module.css";
@@ -22,35 +22,24 @@ interface Iprops {
 }
 const CommentBox = ({ useStates, meadia_item }: Iprops) => {
   const { cmtView, descView, setCmtView, setDescView } = useStates;
-  const { caption, desc, comments, _id } = meadia_item;
+  const { caption, desc, _id } = meadia_item;
   const { data: session } = useSession();
   const dispatch = useAppDispatch();
-  const media_Items = useAppSelector((state) => state.hooks.media_Items);
+  // const media_Items = useAppSelector((state) => state.hooks.media_Items);
   const [api, setApi] = useState<boolean>(false);
+  const [comments, setComments] = useState<
+    {
+      postedBy: { email: string; name: string };
+      comment: string;
+      _id: string;
+    }[]
+  >([]);
 
-  const OnDeleteHandle = async (_key: string) => {
+  const OnDeleteHandle = async (_id: string) => {
     setApi(true);
     try {
-      const res = await client
-        .patch(_id)
-        .unset(["comments[0]", `comments[_key=="${_key}"]`])
-        .commit();
-
-      if (res) {
-        const filteredComments = comments?.filter((cmt) => {
-          return cmt._key != _key;
-        });
-        if (filteredComments) {
-          const updatedItems = media_Items.map((item) => {
-            if (item._id == _id) {
-              return { ...item, comments: [...filteredComments] };
-            } else {
-              return item;
-            }
-          });
-          dispatch(set_media_items([...updatedItems]));
-        }
-      }
+      await client.delete(_id)
+      setComments(pre=>pre.filter(cmt=>cmt._id!=_id))
     } catch (error) {
       message.error("internal server error");
       console.error("unable to delete");
@@ -59,13 +48,23 @@ const CommentBox = ({ useStates, meadia_item }: Iprops) => {
     }
   };
 
+  async function customEffect() {
+    const cmts = await client.fetch(
+      `*[_type=="comments" && post._ref=="${meadia_item._id}"]{postedBy->{name,email},_id,comment}`
+    );
+    console.log({cmts},meadia_item._id)
+    setComments(cmts);
+  }
+  useEffect(() => {
+    customEffect();
+  },[meadia_item._id]);
   return (
     <>
       {!descView && (
         <div className={`${style.commentBox} ${cmtView ? "h-full" : ""} `}>
           <div className={`${style.commentBoxInnerDiv}  `}>
             {comments?.map((cmnt, i) => {
-              const { comment, postedBy, _key } = cmnt;
+              const { comment, postedBy, _id } = cmnt;
               const { name, email } = postedBy;
               return (
                 <div
@@ -79,7 +78,7 @@ const CommentBox = ({ useStates, meadia_item }: Iprops) => {
 
                     {email == session?.user?.email && (
                       <button
-                        onClick={() => OnDeleteHandle(_key)}
+                        onClick={() => OnDeleteHandle(_id)}
                         disabled={api}
                       >
                         <RiDeleteBinLine />
@@ -90,7 +89,7 @@ const CommentBox = ({ useStates, meadia_item }: Iprops) => {
                 </div>
               );
             })}
-            {!comments && (
+            {!comments.length && (
               <p className="w-full text-center font-medium ">
                 No comments yet!
               </p>
@@ -102,7 +101,7 @@ const CommentBox = ({ useStates, meadia_item }: Iprops) => {
           >
             {cmtView && session && (
               <div className="w-full ">
-                <CommentForm meadia_item={meadia_item} />
+                <CommentForm meadia_item={meadia_item} setComments={setComments} />
               </div>
             )}
             <button

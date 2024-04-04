@@ -14,7 +14,7 @@ export const getMediaItems = async ({ dispatch, messageApi }: states) => {
       `*[_type == "post"]{_id,_createdAt,_updatedAt,caption,desc,meadiaFile,postedBy->,tag,comments[]{_key,comment,postedBy->{name,email,_id}},likes[]{_key,postedBy->{name,email,_id}}}`
     );
     dispatch(set_media_items(media));
-    console.log(media);
+    // console.log(media);
     return media;
   } catch (error) {
     messageApi.error('not connected to internet')
