@@ -71,10 +71,6 @@ io.on("connection", async (socket) => {
     console.log('like:dec')
   });
 
-  // socket.on("close:all:updates", async () => {
-  //   const rooms = Object.keys(socket.rooms);
-  //   rooms.forEach((room) => socket.leave(room));
-  // });
 
   socket.on("disconnect", async () => {
     console.log("user disconnected");

@@ -119,7 +119,6 @@ const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
     socketContext?.on.unLike((id) => {
       if (id === meadia_item._id && totalLikes != undefined) {
         setTotalLikes((pre) => {
-          console.log(pre)
           return pre! - 1});
       }
     });
@@ -127,7 +126,7 @@ const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
       socketContext?.offListners.like()
       socketContext?.offListners.unLike()
     }
-  }, [session, socketContext?.on,socketContext?.offListners, meadia_item._id, totalLikes]);
+  }, [session, socketContext?.socket?.connected,socketContext?.on,socketContext?.offListners, meadia_item._id, totalLikes]);
 
   return (
     <>

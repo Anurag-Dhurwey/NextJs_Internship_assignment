@@ -23,11 +23,8 @@ interface Iprops {
 }
 const CommentBox = ({ useStates, meadia_item }: Iprops) => {
   const { cmtView, descView, setCmtView, setDescView } = useStates;
-  // const { caption, desc, _id } = meadia_item;
   const { data: session } = useSession();
   const socketContext = useSocketContext();
-  // const dispatch = useAppDispatch();
-  // const media_Items = useAppSelector((state) => state.hooks.media_Items);
   const [api, setApi] = useState<boolean>(false);
   const [comments, setComments] = useState<
     {
@@ -76,7 +73,7 @@ const CommentBox = ({ useStates, meadia_item }: Iprops) => {
       socketContext?.offListners.comment_created();
       socketContext?.offListners.comment_removed();
     };
-  }, [session, socketContext?.on, socketContext?.offListners, meadia_item._id]);
+  }, [session,socketContext?.socket?.connected, socketContext?.on, socketContext?.offListners, meadia_item._id]);
 
   return (
     <>

@@ -94,9 +94,13 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const initSocket = async () => {
-      const newSocket = io("http://localhost:3000"); // Replace with your server URL
+      if(!process.env.NEXT_PUBLIC_SOCKET_IO_SERVER_URL){
+        console.error('url not found')
+        return
+      }
+      const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_IO_SERVER_URL); // Replace with your server URL
       setSocket(newSocket);
-      console.log("connected to socket");
+      console.log(newSocket.connected);
     };
     initSocket();
 
