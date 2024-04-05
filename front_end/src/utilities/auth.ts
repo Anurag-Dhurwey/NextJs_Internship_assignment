@@ -1,10 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import FacebookProvider from "next-auth/providers/facebook";
+import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
-// import Providers from 'next-auth/providers'
-// import { v4 as uuidv4 } from 'uuid';
 import {client} from './sanityClient'
 import { SanityAdapter, SanityCredentials } from 'next-auth-sanity';
 export const authOptions: NextAuthOptions = {
@@ -12,30 +9,17 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   providers: [
-    // CredentialsProvider({
-    //   name: "Email",
-    //   credentials: {
-    //     name: {
-    //       label: "Name",
-    //       type: "string",
-    //       placeholder: "User name",
-    //       required:true
-    //     },
-    //     email: {
-    //       label: "Email",
-    //       type: "email",
-    //       placeholder: "example@example.com",
-    //       required:true
-    //     },
-    //     password: { label: "Password", type: "password" , required:true},
-    //   },
-    //   async authorize(credentials) {
-    //     const user = { id: uuidv4(), name: credentials?.name, email: credentials?.email,password:credentials?.password };
-    //     return user;
-    //   },
-    // }),
-    
-    // SanityCredentials(client,'user') ,
+    EmailProvider({
+      server: {
+        host: process.env.NEXT_PUBLIC_EMAIL_SERVER_HOST,
+        port: process.env.NEXT_PUBLIC_EMAIL_SERVER_PORT,
+        auth: {
+          user: process.env.NEXT_PUBLIC_EMAIL_SERVER_USER,
+          pass: process.env.NEXT_PUBLIC_EMAIL_SERVER_PASSWORD
+        }
+      },
+      from: process.env.NEXT_PUBLIC_EMAIL_FROM
+    }),
     GitHubProvider({
       clientId: `${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}`,
       clientSecret: `${process.env.NEXT_PUBLIC_GITHUB_CLIENT_SECRET}`
@@ -79,6 +63,7 @@ export const authOptions: NextAuthOptions = {
     // }
   }
 };
+
 
 
 

@@ -35,6 +35,7 @@ io.on("connection", async (socket) => {
   socket.on("created:comment", async (comment?: comment) => {
     if (
       !comment ||
+      !comment._id ||
       !comment.comment ||
       !comment.post ||
       !comment.postedBy ||
@@ -44,13 +45,14 @@ io.on("connection", async (socket) => {
       return;
     }
     socket.to(comment.post).emit("created:comment", comment);
+    console.log(comment.comment)
   });
 
   socket.on("removed:comment", async (cmt_id?: string, post_id?: string) => {
     if (!cmt_id || !post_id) {
       return;
     }
-    socket.to(post_id).emit("removed:comment", { cmt_id, post_id });
+    socket.to(post_id).emit("removed:comment", cmt_id, post_id );
   });
 
   socket.on("increase:like", async (post_id?: string) => {
@@ -86,6 +88,7 @@ server.listen(port, () => {
 module.exports = app;
 
 type comment = {
+  _id?:string
   postedBy?: {
     name?: string;
     email?: string;

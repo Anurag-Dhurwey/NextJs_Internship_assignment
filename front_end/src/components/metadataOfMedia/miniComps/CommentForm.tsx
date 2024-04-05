@@ -7,20 +7,22 @@ import { IoMdSend } from "react-icons/io";
 import { comment_ref, media_Item } from "@/typeScript/basics";
 import { message } from "antd";
 import { client } from "@/utilities/sanityClient";
-import { v4 } from "uuid";
+// import { v4 } from "uuid";
 import { getAdminData } from "@/utilities/functions/getAdminData";
+import { useSocketContext } from "@/context/socket";
 
 const CommentForm = ({ meadia_item, setComments }: props) => {
+  const socketContext = useSocketContext();
   const dispatch = useAppDispatch();
   const admin = useAppSelector((state) => state.hooks.admin);
   const { data: session } = useSession();
-  const media_Items = useAppSelector((state) => state.hooks.media_Items);
+  // const media_Items = useAppSelector((state) => state.hooks.media_Items);
   const [form, setForm] = useState("");
   const [onSubmit, setOnsubmit] = useState<boolean>(false);
 
   const onHnandleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const uuid = v4();
+    // const uuid = v4();
     await getAdminData({ dispatch, admin, session });
     // console.log(uuid);
     const formetedFormText = form
@@ -46,10 +48,16 @@ const CommentForm = ({ meadia_item, setComments }: props) => {
 
         if (cmt && admin._id && admin.name && admin.email) {
           cmt.postedBy = { name: admin.name, email: admin.email } as any;
-          setComments((pre) => [cmt as any, ...pre]);
 
+          socketContext?.emit.comment_created({
+            _id:cmt._id,
+            comment: cmt.comment,
+            post: cmt.post._ref,
+            postedBy: cmt.postedBy as any,
+          });
+
+          setComments((pre) => [cmt as any, ...pre]);
           setForm("");
-          // console.log(res);
         }
       } catch (error) {
         console.error(error);

@@ -3,16 +3,7 @@ import React, {  useEffect } from "react";
 import style from "./home.module.css";
 import { useAppDispatch, useAppSelector } from "../../redux_toolkit/hooks";
 import { RootState } from "@/redux_toolkit/store";
-// import {
-//   toggle_dark_mode,
-//   set_media_items,
-//   set_Admin,
-// } from "../../redux_toolkit/features/indexSlice";
-// import DesktopMetaData from "../metadataOfMedia/DesktopMetaData";
 import { useSession } from "next-auth/react";
-// import Media from "../media/Media";
-// import LikesButton from "../metadataOfMedia/miniComps/LikesButton";
-// import MobileViewMetaData from "../metadataOfMedia/MobileViewMetaData";
 import { getMediaItems } from "@/utilities/functions/getMediaItems";
 import { message } from "antd";
 import Post from "../post/Post";
@@ -45,24 +36,6 @@ const Home = () => {
         {media_Items.map((item, i) => {
           return (
             <Post item={item} key={i}/>
-            // <div key={i} className={style.itemsOuterDiv}>
-            //   <div className={style.itemsInnerDiv}>
-            //     <Media meadiaFile={meadiaFile} />
-            //     <span className=" absolute top-0 right-0 flex justify-center items-start gap-x-4 rounded-xl">
-            //       <span className="flex items-center pt-1 gap-x-[2px] min-[430px]:pr-1">
-            //         <LikesButton meadia_item={item} />
-            //       </span>
-            //       <MobileViewMetaData
-            //         meadia_item={item}
-            //         user={postedBy.name ? postedBy.name : "Unknown"}
-            //       />
-            //     </span>
-            //   </div>
-            //   <DesktopMetaData
-            //     meadia_item={item}
-            //     user={postedBy.name ? postedBy.name : "Unknown"}
-            //   />
-            // </div>
           );
         })}
       </div>

@@ -21,6 +21,12 @@ export const SocketContext = createContext<{
     like: (arg: (post_id: string) => void) => void;
     unLike: (arg: (post_id: string) => void) => void;
   };
+  offListners: {
+    comment_created: () => void;
+    comment_removed: () => void;
+    like: () => void;
+    unLike: () => void;
+}
 } | null>(null);
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -71,6 +77,20 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
       socket?.on("decrease:like", arg);
     },
   };
+  const offListners = {
+    comment_created: function () {
+      socket?.off("created:comment");
+    },
+    comment_removed: function () {
+      socket?.off("removed:comment");
+    },
+    like: function () {
+      socket?.off("increase:like");
+    },
+    unLike: function () {
+      socket?.off("decrease:like");
+    },
+  };
 
   useEffect(() => {
     const initSocket = async () => {
@@ -99,6 +119,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         getUpdates,
         closeAllUpdates,
         closeUpdate,
+        offListners
       }}
     >
       {children}
@@ -113,6 +134,7 @@ export const useSocketContext=()=>{
 
 
 type comment = {
+  _id:string
   postedBy: {
     name: string;
     email: string;

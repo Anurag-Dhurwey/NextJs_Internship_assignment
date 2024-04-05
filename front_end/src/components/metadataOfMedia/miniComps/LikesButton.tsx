@@ -85,8 +85,17 @@ const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
   };
 
   async function withUseEffect() {
+    const like_count = await client.fetch(
+      `count(*[ _type == "likes" && post._ref =="${meadia_item._id}" ]._id)`
+    );
+
+    setTotalLikes(like_count);
+
     await getAdminData({ dispatch, admin, session });
-    if (!session || !admin._id) return;
+    if (!session || !admin._id) {
+      setIsLiked(false);
+      return;
+    }
     const doc = await client.fetch(
       `*[_type == "likes" && post._ref == "${meadia_item._id}" && likedBy._ref == "${admin._id}"]{_id}`
     );
@@ -95,11 +104,6 @@ const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
     } else {
       setIsLiked(false);
     }
-    const like_count = await client.fetch(
-      `count(*[ _type == "likes" && post._ref =="${meadia_item._id}" ]._id)`
-    );
-
-    setTotalLikes(like_count);
   }
 
   useEffect(() => {
@@ -114,10 +118,16 @@ const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
     });
     socketContext?.on.unLike((id) => {
       if (id === meadia_item._id && totalLikes != undefined) {
-        setTotalLikes((pre) => pre! - 1);
+        setTotalLikes((pre) => {
+          console.log(pre)
+          return pre! - 1});
       }
     });
-  }, [session, socketContext?.on, meadia_item._id, totalLikes]);
+    return ()=>{
+      socketContext?.offListners.like()
+      socketContext?.offListners.unLike()
+    }
+  }, [session, socketContext?.on,socketContext?.offListners, meadia_item._id, totalLikes]);
 
   return (
     <>

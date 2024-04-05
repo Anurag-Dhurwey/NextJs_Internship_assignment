@@ -7,9 +7,10 @@ import { useSession } from "next-auth/react";
 import CommentForm from "./CommentForm";
 import { comment_ref, media_Item } from "@/typeScript/basics";
 import { client } from "@/utilities/sanityClient";
-import { set_media_items } from "@/redux_toolkit/features/indexSlice";
-import { useAppDispatch, useAppSelector } from "@/redux_toolkit/hooks";
+// import { set_media_items } from "@/redux_toolkit/features/indexSlice";
+// import { useAppDispatch, useAppSelector } from "@/redux_toolkit/hooks";
 import { message } from "antd";
+import { useSocketContext } from "@/context/socket";
 
 interface Iprops {
   useStates: {
@@ -22,9 +23,10 @@ interface Iprops {
 }
 const CommentBox = ({ useStates, meadia_item }: Iprops) => {
   const { cmtView, descView, setCmtView, setDescView } = useStates;
-  const { caption, desc, _id } = meadia_item;
+  // const { caption, desc, _id } = meadia_item;
   const { data: session } = useSession();
-  const dispatch = useAppDispatch();
+  const socketContext = useSocketContext();
+  // const dispatch = useAppDispatch();
   // const media_Items = useAppSelector((state) => state.hooks.media_Items);
   const [api, setApi] = useState<boolean>(false);
   const [comments, setComments] = useState<
@@ -38,8 +40,9 @@ const CommentBox = ({ useStates, meadia_item }: Iprops) => {
   const OnDeleteHandle = async (_id: string) => {
     setApi(true);
     try {
-      await client.delete(_id)
-      setComments(pre=>pre.filter(cmt=>cmt._id!=_id))
+      await client.delete(_id);
+      socketContext?.emit.comment_removed(_id, meadia_item._id);
+      setComments((pre) => pre.filter((cmt) => cmt._id != _id));
     } catch (error) {
       message.error("internal server error");
       console.error("unable to delete");
@@ -52,12 +55,29 @@ const CommentBox = ({ useStates, meadia_item }: Iprops) => {
     const cmts = await client.fetch(
       `*[_type=="comments" && post._ref=="${meadia_item._id}"]{postedBy->{name,email},_id,comment}`
     );
-    // console.log({cmts},meadia_item._id)
     setComments(cmts);
   }
   useEffect(() => {
     customEffect();
-  },[meadia_item._id]);
+  }, [meadia_item._id]);
+
+  useEffect(() => {
+    socketContext?.on.comment_created((cmt) => {
+      if (cmt.post === meadia_item._id) {
+        setComments((pre) => [cmt, ...pre]);
+      }
+    });
+    socketContext?.on.comment_removed((cmt_id, post_id) => {
+      if (post_id === meadia_item._id) {
+        setComments((pre) => pre.filter((cmt) => cmt._id != cmt_id));
+      }
+    });
+    return () => {
+      socketContext?.offListners.comment_created();
+      socketContext?.offListners.comment_removed();
+    };
+  }, [session, socketContext?.on, socketContext?.offListners, meadia_item._id]);
+
   return (
     <>
       {!descView && (
@@ -101,7 +121,10 @@ const CommentBox = ({ useStates, meadia_item }: Iprops) => {
           >
             {cmtView && session && (
               <div className="w-full ">
-                <CommentForm meadia_item={meadia_item} setComments={setComments} />
+                <CommentForm
+                  meadia_item={meadia_item}
+                  setComments={setComments}
+                />
               </div>
             )}
             <button
