@@ -21,9 +21,15 @@ io.on("connection", async (socket) => {
     if (!id) return;
     socket.join(`${id}`);
   });
-  socket.on("close:updates", async (id?: string) => {
-    if (!id) return;
-    socket.leave(`${id}`);
+
+  socket.on("close:updates", async (ids?: string | string[]) => {
+    if (!ids) return;
+    if (typeof ids === "string") {
+      ids = [ids];
+    }
+    ids.forEach((id) => {
+      socket.leave(`${id}`);
+    });
   });
 
   socket.on("created:comment", async (comment?: comment) => {
@@ -40,32 +46,33 @@ io.on("connection", async (socket) => {
     socket.to(comment.post).emit("created:comment", comment);
   });
 
-  socket.on("removed:comment", async (cmt_id?: string,post_id?:string) => {
-    if (
-     !cmt_id||!post_id
-    ) {
+  socket.on("removed:comment", async (cmt_id?: string, post_id?: string) => {
+    if (!cmt_id || !post_id) {
       return;
     }
-    socket.to(post_id).emit("removed:comment", {cmt_id,post_id});
+    socket.to(post_id).emit("removed:comment", { cmt_id, post_id });
   });
 
-  socket.on("increase:like", async (post_id?:string) => {
-    if (
-     !post_id
-    ) {
+  socket.on("increase:like", async (post_id?: string) => {
+    if (!post_id) {
       return;
     }
     socket.to(post_id).emit("increase:like", post_id);
+    console.log('like:inc')
   });
 
-  socket.on("decrease:like", async (post_id?:string) => {
-    if (
-     !post_id
-    ) {
+  socket.on("decrease:like", async (post_id?: string) => {
+    if (!post_id) {
       return;
     }
     socket.to(post_id).emit("decrease:like", post_id);
+    console.log('like:dec')
   });
+
+  // socket.on("close:all:updates", async () => {
+  //   const rooms = Object.keys(socket.rooms);
+  //   rooms.forEach((room) => socket.leave(room));
+  // });
 
   socket.on("disconnect", async () => {
     console.log("user disconnected");

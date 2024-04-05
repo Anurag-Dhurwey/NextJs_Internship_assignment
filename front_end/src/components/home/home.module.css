@@ -15,7 +15,7 @@
     width: 90%;
   }
 }
-
+/* 
 .itemsOuterDiv {
   width: 100%;
   padding: 6px 0px;
@@ -37,7 +37,7 @@
   align-items: center;
   border-radius: 10px;
   background-color: rgba(80, 79, 79, 0.836);
-}
+} */
 
 @media (max-width: 825px) {
   .itemsInnerDiv {

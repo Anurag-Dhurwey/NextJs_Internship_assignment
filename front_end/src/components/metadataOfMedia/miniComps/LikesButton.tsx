@@ -9,9 +9,11 @@ import { like, like_ref, media_Item } from "@/typeScript/basics";
 import { message } from "antd";
 import { v4 as uuidv4 } from "uuid";
 import { getAdminData } from "@/utilities/functions/getAdminData";
+import { useSocketContext } from "@/context/socket";
 
 const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
   const dispatch = useAppDispatch();
+  const socketContext = useSocketContext();
   const { data: session } = useSession();
   const admin = useAppSelector((state) => state.hooks.admin);
   // const media_Items = useAppSelector((state) => state.hooks.media_Items);
@@ -63,8 +65,12 @@ const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
       try {
         if (isLiked) {
           await unLike();
+          totalLikes && setTotalLikes((pre) => pre! - 1);
+          socketContext?.emit.unLike(meadia_item._id);
         } else {
           await like();
+          setTotalLikes((pre) => (pre != undefined ? pre + 1 : 1));
+          socketContext?.emit.like(meadia_item._id);
         }
       } catch (error) {
         console.error(error);
@@ -80,7 +86,7 @@ const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
 
   async function withUseEffect() {
     await getAdminData({ dispatch, admin, session });
-    if(!session||!admin._id) return
+    if (!session || !admin._id) return;
     const doc = await client.fetch(
       `*[_type == "likes" && post._ref == "${meadia_item._id}" && likedBy._ref == "${admin._id}"]{_id}`
     );
@@ -99,6 +105,20 @@ const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
   useEffect(() => {
     withUseEffect();
   }, [meadia_item, session]);
+
+  useEffect(() => {
+    socketContext?.on.like((id) => {
+      if (id === meadia_item._id && totalLikes != undefined) {
+        setTotalLikes((pre) => pre! + 1);
+      }
+    });
+    socketContext?.on.unLike((id) => {
+      if (id === meadia_item._id && totalLikes != undefined) {
+        setTotalLikes((pre) => pre! - 1);
+      }
+    });
+  }, [session, socketContext?.on, meadia_item._id, totalLikes]);
+
   return (
     <>
       {isLiked != undefined && (

@@ -52,7 +52,7 @@ const CommentBox = ({ useStates, meadia_item }: Iprops) => {
     const cmts = await client.fetch(
       `*[_type=="comments" && post._ref=="${meadia_item._id}"]{postedBy->{name,email},_id,comment}`
     );
-    console.log({cmts},meadia_item._id)
+    // console.log({cmts},meadia_item._id)
     setComments(cmts);
   }
   useEffect(() => {

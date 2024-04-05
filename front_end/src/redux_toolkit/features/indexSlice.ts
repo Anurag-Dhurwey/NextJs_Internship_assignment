@@ -7,9 +7,6 @@ import {
   connections,
   usr_and_key_in_array,
   min_id_of_usr,
-  // users_with_old_chats,
-  // loadedChatMessages,
-  // chat_messages,
 } from "@/typeScript/basics";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
@@ -31,7 +28,6 @@ const initialState: CounterState = {
     desc: "",
     bio: "",
     link: "",
-    assetId: "",
   },
   media_Items: [],
   my_uploads: [],
@@ -48,14 +44,6 @@ export const counterSlice = createSlice({
     },
     set_Admin: (state, action: PayloadAction<admin>) => {
       state.admin = action.payload;
-    },
-    // set_ConnectionsId: (state, action: PayloadAction<string>) => {
-    //   if (state.admin.connections && !state.admin.connections._id) {
-    //     state.admin.connections._id = action.payload;
-    //   }
-    // },
-    set_AssetId: (state, action: PayloadAction<string>) => {
-      state.admin.assetId = action.payload;
     },
     set_media_items: (state, action: PayloadAction<Array<media_Item>>) => {
       state.media_Items = [...action.payload];
@@ -82,8 +70,6 @@ export const {
   set_media_items,
   set_my_uploads,
   set_Admin,
-  // set_ConnectionsId,
-  set_AssetId,
   set_suggestedData,
 } = counterSlice.actions;
 
@@ -99,9 +85,3 @@ export interface suggestedDataPayloadType {
 export interface onlineUsers extends users {
   socketId: String;
 }
-
-type setAdminConnectionsPayloadType = {
-  command: string;
-  data: usr_and_key_in_array;
-  current: connections;
-};

@@ -41,8 +41,6 @@ export type admin = {
   bio?: string;
   desc?: string;
   link?: string;
-  connections?: connections;
-  assetId?: string;
 };
 
 export type me = admin;
