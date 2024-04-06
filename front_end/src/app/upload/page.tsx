@@ -6,13 +6,17 @@ import { useAppDispatch, useAppSelector } from "@/redux_toolkit/hooks";
 import { useSession } from "next-auth/react";
 import { client } from "@/utilities/sanityClient";
 import { getMediaItems } from "@/utilities/functions/getMediaItems";
-// import { socketIoConnection } from "@/utilities/socketIo";
 import { message } from "antd";
-import { getAssetId } from "@/utilities/functions/getAssetId";
 import { imgFormates, videoFormates } from "@/components/media/Media";
 import { getAdminData } from "@/utilities/functions/getAdminData";
 import { set_media_items } from "@/redux_toolkit/features/indexSlice";
-
+import { SanityAssetDocument } from "next-sanity";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Image from "next/image";
+import { getFileExtensionFromUrl } from "@/utilities/functions/getFileExtensionFromUrl";
+import { url } from "inspector";
 const Page = () => {
   const dispatch = useAppDispatch();
   const [messageApi, contextHolder] = message.useMessage();
@@ -29,18 +33,45 @@ const Page = () => {
     desc: "",
     filePath: "",
   });
-  const [file, setFile] = useState<File>();
-
-  const onChageHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [uploadedAssets, setUploadedAssets] = useState<SanityAssetDocument[]>(
+    []
+  );
+  const [assetUploading, setAssetUploading] = useState(false);
+  const onChageHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValidationError(undefined);
     setForm({ ...form, [e.target.name]: e.target.value });
     const file = e.target.files;
     if (file) {
-      console.log(file)
-      setValidationError(undefined);
-      setFile(file[0]);
-      setForm({ ...form, filePath: e.target.value });
-      checkFileSize({ file: file[0], setValidationError });
-      checkFileType({ file: file[0], setValidationError });
+      if (
+        checkFileSize({ file: file[0], setValidationError }) &&
+        checkFileType({ file: file[0], setValidationError })
+      ) {
+        setAssetUploading(true);
+        try {
+          const res = await client.assets.upload("file", file[0], {
+            contentType: file[0].type,
+            filename: `${Date.now()}_` + file[0].name,
+          });
+          const asset = {
+            _type: "assets",
+            file: {
+              _type: "reference",
+              _ref: res._id,
+            },
+            postedBy: {
+              _type: "reference",
+              _ref: admin._id,
+            },
+          };
+          await client.create(asset);
+          setUploadedAssets((pre) => [res, ...pre]);
+          setForm({ ...form, filePath: e.target.value });
+        } catch (error) {
+          messageApi.error("unable to upload");
+        } finally {
+          setAssetUploading(false);
+        }
+      }
     }
   };
 
@@ -48,39 +79,22 @@ const Page = () => {
     e.preventDefault();
     if (
       session &&
-      file &&
+      uploadedAssets.length &&
       admin._id &&
       admin.email &&
-      !validationError &&
       !formStatus
     ) {
       setFormStatus("uploading");
       try {
-        const uploadedAssetRes = await client.assets.upload("file", file, {
-          contentType: file.type,
-          filename: file.name+`_${Date.now()}`,
-        });
-        const asset = {
-          _type: "assets",
-          file: {
-            _type: "reference",
-            _ref: uploadedAssetRes._id,
-          },
-          postedBy: {
-            _type: "reference",
-            _ref: admin._id,
-          },
-        };
-        await client.create(asset);
         const doc = {
           _type: "post",
-          meadiaFile: {
+          meadiaFiles: uploadedAssets.map((asset) => ({
             _type: "file",
             asset: {
               _type: "reference",
-              _ref: uploadedAssetRes._id,
+              _ref: asset._id,
             },
-          },
+          })),
           postedBy: {
             _type: "reference",
             _ref: admin._id,
@@ -99,14 +113,13 @@ const Page = () => {
         messageApi.success("Published Successfully");
         setFormStatus("success");
         setForm({ caption: "", desc: "", filePath: "" });
-        setFile(undefined);
+        setUploadedAssets([]);
+        setValidationError(undefined)
       } catch (error) {
         messageApi.error("unable to publish, try again later");
         setFormStatus("failed");
         console.error(error);
       }
-    } else if (validationError?.length) {
-      alert(validationError[0].message);
     } else if (formStatus) {
       alert("uploading, please wait!");
     } else {
@@ -132,11 +145,11 @@ const Page = () => {
   return (
     <div className={style.uploadMainDiv}>
       {contextHolder}
-      {formStatus === "uploading" && (
+      {(formStatus === "uploading" || assetUploading) && (
         <div className={`${style.uploadingModal}`}>
-          <h2 className=" font-bold text-center text-lg text-green-900">
-            Uploading...
-          </h2>
+          <Box sx={{ display: "flex" }}>
+            <CircularProgress />
+          </Box>
         </div>
       )}
       <div className={style.chiledOfUploadMainDiv}>
@@ -165,7 +178,51 @@ const Page = () => {
               value={form.desc}
             />
           </div>
+          {!!uploadedAssets.length && (
+            <div style={{ flexDirection: "row" }}>
+              {uploadedAssets.map((asset, i) => {
+                const type = getFileExtensionFromUrl(asset.url);
+                if (!type || !asset.url)
+                  return (
+                    <Paper style={{ height: "100px", width: "100px" }} key={i}>
+                      <p>error</p>
+                    </Paper>
+                  );
+                return (
+                  <Paper
+                    style={{
+                      height: "100px",
+                      width: "100px",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      overflow: "hidden",
+                    }}
+                    key={i}
+                  >
+                    <>
+                      {videoFormates.includes(type) && (
+                        <video
+                          controls
+                          src={asset.url}
+                          className=" max-h-[395px] rounded-md"
+                        />
+                      )}
 
+                      {imgFormates.includes(type) && (
+                        <Image
+                          src={asset.url}
+                          alt="post"
+                          width={1000}
+                          height={1000}
+                          className="h-auto w-auto"
+                        />
+                      )}
+                    </>
+                  </Paper>
+                );
+              })}
+            </div>
+          )}
           <div>
             <label htmlFor="file">Upload File</label>
             <input
@@ -201,16 +258,17 @@ const Page = () => {
 export default Page;
 
 function checkFileSize({ file, setValidationError }: checkFile) {
-  const size: boolean = file.size <= 1000 * 1024 * 10;
+  const size: boolean = file.size <= 1000 * 1024 * 5;
   if (!size) {
     const errorDoc = {
       name: "size",
-      message: "File size should be less than 10 MB",
+      message: "File size should be less than 5 MB",
     };
     setValidationError((pre) => {
       return pre ? [...pre, errorDoc] : [errorDoc];
     });
   }
+  return size;
 }
 
 function checkFileType({ file, setValidationError }: checkFile) {
@@ -227,6 +285,7 @@ function checkFileType({ file, setValidationError }: checkFile) {
         return pre ? [...pre, errorDoc] : [errorDoc];
       });
     }
+    return check;
   } else {
     const errorDoc = {
       name: "type",
@@ -235,6 +294,7 @@ function checkFileType({ file, setValidationError }: checkFile) {
     setValidationError((pre) => {
       return pre ? [...pre, errorDoc] : [errorDoc];
     });
+    return false;
   }
 }
 

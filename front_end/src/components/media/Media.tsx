@@ -8,6 +8,7 @@ import MobileStepper from "@mui/material/MobileStepper";
 import Button from "@mui/material/Button";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import { getFileExtensionFromUrl } from "@/utilities/functions/getFileExtensionFromUrl";
 
 export const videoFormates = ["webm", "mp4", "avi", "ogg"];
 export const imgFormates = ["jpeg", "jpg", "png", "svg", "gif"];
@@ -33,13 +34,7 @@ const Media = ({
   activeStep>0&&  setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  function getFileExtensionFromUrl(url: string) {
-    const urlParts = url.split(".");
-    if (urlParts.length > 1) {
-      return urlParts.pop()?.toLowerCase();
-    }
-    return null; // No file extension found
-  }
+
  
   const [imgCover, setImgCover] = useState<boolean>(false);
 
