@@ -48,7 +48,6 @@ const Media = ({
       setFiles((pre) => [...pre, { url, type: getFileExtensionFromUrl(url) }]);
     });
   }, [meadiaFiles]);
-
   return (
     <>
       <span

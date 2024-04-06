@@ -29,7 +29,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
   if (!session && !data.email) return null;
 
   return (
-    <section>
+    <section className="bg-slate-600 h-screen">
       {data.email == session?.user?.email ? (
         <AdminProfile />
       ) : (

@@ -4,8 +4,6 @@ import {
   suggestedData,
   admin,
   users,
-  connections,
-  usr_and_key_in_array,
   min_id_of_usr,
 } from "@/typeScript/basics";
 import type { PayloadAction } from "@reduxjs/toolkit";
@@ -15,7 +13,7 @@ export interface CounterState {
   admin: admin;
   media_Items: Array<media_Item>;
   my_uploads: Array<media_Item>;
-  onLineUsers: Array<onlineUsers>;
+  // onLineUsers: Array<onlineUsers>;
   suggestedData: suggestedData;
 }
 const initialState: CounterState = {
@@ -31,7 +29,6 @@ const initialState: CounterState = {
   },
   media_Items: [],
   my_uploads: [],
-  onLineUsers: [],
   suggestedData: { users: [] },
 };
 

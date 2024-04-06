@@ -1,5 +1,9 @@
 // import { onlineUsers } from "@/redux_toolkit/features/indexSlice";
 // import { MessageInstance } from "antd/es/message/interface";
+
+import { OverridableComponent } from "@mui/material/OverridableComponent";
+import { SvgIconTypeMap } from "@mui/material/SvgIcon";
+
 // import { type } from "os";
 export type session = {
   user?: sessionUser;
@@ -45,12 +49,6 @@ export type admin = {
 
 export type me = admin;
 
-// export interface connections {
-//   _id?: string;
-//   connected?: usr_and_key_in_array[];
-//   requests_got?: usr_and_key_in_array[];
-//   requests_sent?: usr_and_key_in_array[];
-// }
 export type usr_and_key_in_array = {
   _key: string;
   user: { _id: string; name: string; email: string; image: string };
@@ -69,20 +67,10 @@ export interface media_Item {
   caption?: string;
   desc?: string;
   tag?: string;
-  // likes?: like[];
-  // comments?: comment[];
   _updatedAt?: string;
   _createdAt?: string;
 }
 
-// export interface like {
-//   _key: string;
-//   postedBy: {
-//     _id: string;
-//     name: string;
-//     email: string;
-//   };
-// }
 
 export interface _ref {
   _type: string;
@@ -93,16 +81,6 @@ export interface like_ref {
   _key: string;
   postedBy: _ref;
 }
-
-// interface comment extends like {
-//   comment: string;
-// }
-
-// export interface comment_ref {
-//   _key: string;
-//   comment: string;
-//   postedBy: _ref;
-// }
 
 export interface meadiaFile {
   _type: string;
@@ -118,9 +96,9 @@ export type postedBy = min_id_of_usr;
 //   message: MessageInstance;
 // }
 
-// export interface suggestedData {
-//   users: min_id_of_usr[];
-// }
+export interface suggestedData {
+  users: min_id_of_usr[];
+}
 
 // export interface users_with_old_chats {
 //   _id: string;
@@ -145,3 +123,15 @@ export type postedBy = min_id_of_usr;
 //   chat_id?: string;
 //   user: min_id_of_usr;
 // }
+
+
+
+export interface route{
+  Icon: OverridableComponent<SvgIconTypeMap<{}, "svg">> & {
+    muiName: string;
+  };
+  title: string;
+  active: boolean;
+  path: string;
+  protected?: boolean;
+}

@@ -17,10 +17,9 @@ const AdminProfile = () => {
 
   const getMyUploads = async () => {
     const media = await client.fetch(
-      `*[_type == "post" && postedBy->email=="${session?.user?.email}"]{_id,caption,desc,meadiaFile,postedBy->,tag,comments[]{comment,postedBy->}}`
+      `*[_type == "post" && postedBy->email=="${session?.user?.email}"]{_id,caption,desc,meadiaFiles,postedBy->,tag,comments[]{comment,postedBy->}}`
     );
     dispatch(set_my_uploads(media));
-    console.log(media);
     return media;
   };
 
@@ -44,11 +43,12 @@ const AdminProfile = () => {
    if (!session) {
      return null
    }
-   console.log({admin});
    return (
-    <div className={style.adminProfileParentDiv}>
-      <div className={style.adminProfile_firstChildDiv}>
-        {admin.image  && (
+    <div className={`${style.adminProfileParentDiv} gap-[10px]`}>
+      <div className={`${style.adminProfile_firstChildDiv} flex-col text-center bg-blue-400 lg:w-[800px] rounded-md `}>
+      <h3 className='w-full bg-blue-600 rounded-sm py-1'>Profile</h3>
+       <div className={`${style.adminProfile_firstChildDiv} p-5`}>
+       {admin.image  && (
           <Image
             src={admin.image}
             width={1000}
@@ -59,25 +59,29 @@ const AdminProfile = () => {
         )}
         <div className="">
           <h4>
-            Name : <span>{name}</span>
+             <span>{name}</span>
           </h4>
           <h4>
-            Email : <span>{email}</span>
+            <span>{email}</span>
           </h4>
         </div>
+       </div>
       </div>
-      <div className={style.adminProfile_secondChildDiv}>
+      <div className={ `${style.adminProfile_secondChildDiv} flex-col text-center bg-blue-400 lg:w-[800px] rounded-md`}>
+       <h3 className='w-full bg-blue-600 rounded-sm py-1'>Uploads</h3>
+        <div className={ `${style.adminProfile_secondChildDiv} p-5`}>
         {my_uploads.map((my_post, i) => {
-          const { meadiaFile } = my_post;
+          const { meadiaFiles } = my_post;
           return (
             <div
               key={i}
-              className={style.mappedUploads}
+              className={`${style.mappedUploads} bg-slate-600 rounded-md p-2`}
             >
-              <Media meadiaFile={meadiaFile} profileView={true} key={i} />
+              <Media meadiaFiles={meadiaFiles} profileView={true} key={i} />
             </div>
           );
         })}
+        </div>
       </div>
     </div>
   );

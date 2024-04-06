@@ -8,7 +8,7 @@ const app = express();
 const server = createServer(app);
 
 const io = new Server(server, { cors: { origin: "*" } });
-const port = 3000;
+const port = 4000;
 
 app.use(cors({ origin: "*" }));
 
