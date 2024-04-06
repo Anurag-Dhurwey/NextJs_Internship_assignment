@@ -4,9 +4,10 @@ export default {
   type: 'document',
   fields: [
     {
-      name: 'meadiaFile',
-      title: 'MeadiaFile',
-      type: 'file',
+      name: 'meadiaFiles',
+      title: 'MeadiaFiles',
+      type: 'array',
+      of:[{type:'file'}],
       options: {
         hotspot: true,
       },

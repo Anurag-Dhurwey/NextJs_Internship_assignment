@@ -35,6 +35,7 @@ const Page = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
     const file = e.target.files;
     if (file) {
+      console.log(file)
       setValidationError(undefined);
       setFile(file[0]);
       setForm({ ...form, filePath: e.target.value });

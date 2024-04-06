@@ -1,6 +1,6 @@
-import { onlineUsers } from "@/redux_toolkit/features/indexSlice";
+// import { onlineUsers } from "@/redux_toolkit/features/indexSlice";
 // import { MessageInstance } from "antd/es/message/interface";
-import { type } from "os";
+// import { type } from "os";
 export type session = {
   user?: sessionUser;
 } | null;
@@ -45,12 +45,12 @@ export type admin = {
 
 export type me = admin;
 
-export interface connections {
-  _id?: string;
-  connected?: usr_and_key_in_array[];
-  requests_got?: usr_and_key_in_array[];
-  requests_sent?: usr_and_key_in_array[];
-}
+// export interface connections {
+//   _id?: string;
+//   connected?: usr_and_key_in_array[];
+//   requests_got?: usr_and_key_in_array[];
+//   requests_sent?: usr_and_key_in_array[];
+// }
 export type usr_and_key_in_array = {
   _key: string;
   user: { _id: string; name: string; email: string; image: string };
@@ -64,25 +64,25 @@ export interface uploadForm {
 
 export interface media_Item {
   _id: string;
-  meadiaFile: meadiaFile;
+  meadiaFiles: meadiaFile[];
   postedBy: postedBy;
   caption?: string;
   desc?: string;
   tag?: string;
-  likes?: like[];
-  comments?: comment[];
+  // likes?: like[];
+  // comments?: comment[];
   _updatedAt?: string;
   _createdAt?: string;
 }
 
-export interface like {
-  _key: string;
-  postedBy: {
-    _id: string;
-    name: string;
-    email: string;
-  };
-}
+// export interface like {
+//   _key: string;
+//   postedBy: {
+//     _id: string;
+//     name: string;
+//     email: string;
+//   };
+// }
 
 export interface _ref {
   _type: string;
@@ -94,15 +94,15 @@ export interface like_ref {
   postedBy: _ref;
 }
 
-interface comment extends like {
-  comment: string;
-}
+// interface comment extends like {
+//   comment: string;
+// }
 
-export interface comment_ref {
-  _key: string;
-  comment: string;
-  postedBy: _ref;
-}
+// export interface comment_ref {
+//   _key: string;
+//   comment: string;
+//   postedBy: _ref;
+// }
 
 export interface meadiaFile {
   _type: string;
@@ -118,30 +118,30 @@ export type postedBy = min_id_of_usr;
 //   message: MessageInstance;
 // }
 
-export interface suggestedData {
-  users: min_id_of_usr[];
-}
+// export interface suggestedData {
+//   users: min_id_of_usr[];
+// }
 
-export interface users_with_old_chats {
-  _id: string;
-  userOne: min_id_of_usr;
-  userTwo: min_id_of_usr;
-}
-export interface loadedChatMessages {
-  _id: string;
-  friend: min_id_of_usr;
-  messages: chat_messages[];
-};
+// export interface users_with_old_chats {
+//   _id: string;
+//   userOne: min_id_of_usr;
+//   userTwo: min_id_of_usr;
+// }
+// export interface loadedChatMessages {
+//   _id: string;
+//   friend: min_id_of_usr;
+//   messages: chat_messages[];
+// };
 
-export interface chat_messages {
-  _key: string;
-  sender: _ref;
-  receiver: _ref;
-  message: string;
-  date_time: Date|string;
-}
+// export interface chat_messages {
+//   _key: string;
+//   sender: _ref;
+//   receiver: _ref;
+//   message: string;
+//   date_time: Date|string;
+// }
 
-export interface currentUser_On_Chat {
-  chat_id?: string;
-  user: min_id_of_usr;
-}
+// export interface currentUser_On_Chat {
+//   chat_id?: string;
+//   user: min_id_of_usr;
+// }
