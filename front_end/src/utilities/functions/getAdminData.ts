@@ -17,7 +17,6 @@ interface states {
 
 export const getAdminData = async ({
   dispatch,
-  // set_Admin,
   admin,
   session,
   messageApi,

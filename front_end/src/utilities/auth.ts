@@ -9,6 +9,7 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   providers: [
+    SanityCredentials(client),
     EmailProvider({
       server: {
         host: process.env.NEXT_PUBLIC_EMAIL_SERVER_HOST,

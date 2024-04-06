@@ -1,8 +1,5 @@
 "use client";
 import React, { useEffect } from "react";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Image from "next/image";
 import Avatar from "@mui/material/Avatar";
 import { useAppDispatch, useAppSelector } from "@/redux_toolkit/hooks";
 import { getSuggestedUsers } from "@/utilities/functions/getSuggestedUsers";
@@ -19,7 +16,6 @@ const Search = () => {
     }
     getUsers();
   }, []);
-console.log(users)
   return (
     <section className="bg-slate-600 h-screen flex justify-start items-center flex-col gap-2">
      

@@ -80,43 +80,51 @@ const Navbar = () => {
         </div>
 
         <div className={style.right}>
-          {socketContext?.socket?.active &&!socketContext?.socket?.connected&& (
-            <button>
-              <CircularProgress size={20} />
-            </button>
-          )}
+          {socketContext?.socket?.active &&
+            !socketContext?.socket?.connected && (
+              <button>
+                <CircularProgress size={20} />
+              </button>
+            )}
           {socketContext?.socket?.connected && (
             <button onClick={() => socketContext.socket?.connect()}>
               <CloudQueueRoundedIcon />
             </button>
-          ) }
-          {
-            !socketContext?.socket?.active&&!socketContext?.socket?.connected &&(
+          )}
+          {!socketContext?.socket?.active &&
+            !socketContext?.socket?.connected && (
               <button onClick={() => socketContext?.socket?.disconnect()}>
                 <CloudOffRoundedIcon />
               </button>
-            )
-          }
-          <div onClick={() => {}} className={style.profile_icon}>
-            <span className=" font-extrabold text-2xl text-yellow-700">
-              {session?.user?.name?.slice(0, 1)}
-            </span>
-            <div className={style.dropdown_content}>
-              {session && (
-                <>
-                  <button>
-                    <Link href={`/profile/${slug}`}>Profile</Link>
-                  </button>
-                  <button onClick={() => signOut()}>Logout</button>
-                </>
-              )}
-              {!session && (
-                <>
-                  <button onClick={() => signIn()}>Login</button>
-                </>
-              )}
-            </div>
-          </div>
+            )}
+          {/* <div className={style.dropdown_content}> */}
+          {session && (
+            <>
+              <button>
+                <Link href={`/profile/${slug}`}>Profile</Link>
+              </button>
+              <button onClick={() => signOut()}>Logout</button>
+            </>
+          )}
+          {!session && (
+            <>
+              <button onClick={() => signIn()}>LogIn</button>
+              <button>
+                <Link href={`/auth/signup`}>SignUp </Link>
+              </button>
+            </>
+          )}
+          {/* </div> */}
+          {session && (
+            <Link
+              href={`/profile/${slug}`}
+              className={style.profile_icon}
+            >
+              <span className=" uppercase font-extrabold text-2xl text-yellow-700">
+                {session?.user?.name?.slice(0, 1)}
+              </span>
+            </Link>
+          )}
         </div>
       </div>
     </div>
