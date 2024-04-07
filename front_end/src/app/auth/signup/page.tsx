@@ -1,11 +1,13 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { signUp } from "next-auth-sanity/client";
 import { message } from "antd";
+import { redirect } from "next/navigation";
 const SignUp = () => {
+  const { data: session } = useSession();
   const [form, setForm] = useState<{
     name: string;
     email: string;
@@ -41,6 +43,13 @@ const SignUp = () => {
   ) {
     setForm((pre) => ({ ...pre, [e.target.name]: e.target.value }));
   }
+
+  useEffect(() => {
+    function validateReq() {
+      !session && redirect("/");
+    }
+    validateReq();
+  }, [session]);
 
   return (
     <section className="bg-slate-600 h-screen flex justify-center items-center flex-col gap-2">

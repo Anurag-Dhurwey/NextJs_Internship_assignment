@@ -2,9 +2,8 @@
 import AdminProfile from "@/components/profiles/AdminProfile";
 import UsersProfile from "@/components/profiles/UsersProfile";
 import { useAppDispatch, useAppSelector } from "@/redux_toolkit/hooks";
-import {  profileSlugObjType } from "@/typeScript/basics";
+import { profileSlugObjType } from "@/typeScript/basics";
 import { getAdminData } from "@/utilities/functions/getAdminData";
-// import { socketIoConnection } from "@/utilities/socketIo";
 import { message } from "antd";
 import { useSession } from "next-auth/react";
 import React, { useEffect } from "react";
@@ -16,15 +15,14 @@ const Page = ({ params }: { params: { slug: string } }) => {
   const slug = params.slug;
   const data: profileSlugObjType = JSON.parse(decodeURIComponent(slug));
 
- async function withUseEffect() {
-    if (!admin._id) {
-      await getAdminData({ dispatch, admin, session, messageApi: message });
-    }
-  }
-
   useEffect(() => {
+    async function withUseEffect() {
+      if (!admin._id) {
+        await getAdminData({ dispatch, admin, session, messageApi: message });
+      }
+    }
     withUseEffect();
-  }, [session]);
+  }, [session, admin, dispatch]);
 
   if (!session && !data.email) return null;
 

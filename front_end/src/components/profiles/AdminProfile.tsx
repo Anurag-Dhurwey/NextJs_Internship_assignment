@@ -14,33 +14,36 @@ const AdminProfile = () => {
   const dispatch = useAppDispatch();
   const { data: session } = useSession();
 
-  const getMyUploads = async () => {
-    const media = await client.fetch(
-      `*[_type == "post" && postedBy->email=="${session?.user?.email}"]{_id,caption,desc,meadiaFiles,postedBy->,tag,comments[]{comment,postedBy->}}`
-    );
-    dispatch(set_my_uploads(media));
-    return media;
-  };
+  // const getMyUploads = async () => {
+  //   const media = await client.fetch(
+  //     `*[_type == "post" && postedBy->email=="${session?.user?.email}"]{_id,caption,desc,meadiaFiles,postedBy->,tag,comments[]{comment,postedBy->}}`
+  //   );
+  //   dispatch(set_my_uploads(media));
+  //   return media;
+  // };
 
   const admin = useAppSelector((state) => state.hooks.admin);
   const { name, email, image, _id } = admin;
   const media_Items = useAppSelector((state) => state.hooks.media_Items);
   const my_uploads = useAppSelector((state) => state.hooks.my_uploads);
 
-  function withUseEffect() {
-    if (session) {
-      if (!my_uploads.length) {
-        getMyUploads();
+  useEffect(() => {
+    async function withUseEffect() {
+      if (session) {
+        if (!my_uploads.length) {
+          const media = await client.fetch(
+            `*[_type == "post" && postedBy->email=="${session?.user?.email}"]{_id,caption,desc,meadiaFiles,postedBy->,tag,comments[]{comment,postedBy->}}`
+          );
+          dispatch(set_my_uploads(media));
+          return media;
+        }
+      }
+      if (!admin._id) {
+        getAdminData({ dispatch, admin, session });
       }
     }
-    if (!admin._id) {
-      getAdminData({ dispatch, admin, session });
-    }
-  }
-
-  useEffect(() => {
     withUseEffect();
-  }, [session, media_Items]);
+  }, [session, media_Items, dispatch, my_uploads.length, admin]);
   if (!session) {
     return null;
   }
@@ -50,7 +53,7 @@ const AdminProfile = () => {
         className={`${style.adminProfile_firstChildDiv} w-full flex-col text-center bg-blue-400 lg:w-[800px] rounded-md `}
       >
         <h3 className="w-full bg-blue-600 rounded-sm py-1">Profile</h3>
-        <div className={`${style.adminProfile_firstChildDiv} p-5`}>
+        <div className={`${style.adminProfile_firstChildDiv} p-5 flex-wrap`}>
           {admin.image || session.user?.image ? (
             <Image
               src={admin.image! || session!.user!.image!}
@@ -74,9 +77,14 @@ const AdminProfile = () => {
               <span>{email || session.user?.email}</span>
             </h4>
           </div>
-          
         </div>
-        <Button className="w-full text-center mb-1" variant="contained" onClick={() => signOut()} >LogOut</Button>
+        <Button
+          className="w-full text-center mb-1"
+          variant="contained"
+          onClick={() => signOut({ callbackUrl: "/", redirect: true })}
+        >
+          LogOut
+        </Button>
       </div>
       <div
         className={`${style.adminProfile_secondChildDiv} flex-col text-center bg-blue-400 lg:w-[800px] rounded-md`}

@@ -1,22 +1,36 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { uploadForm, media_Item } from "@/typeScript/basics";
+import React, {  useState } from "react";
+import { uploadForm } from "@/typeScript/basics";
 import style from "./upload.module.css";
 import { useAppDispatch, useAppSelector } from "@/redux_toolkit/hooks";
 import { useSession } from "next-auth/react";
 import { client } from "@/utilities/sanityClient";
-import { getMediaItems } from "@/utilities/functions/getMediaItems";
 import { message } from "antd";
 import { imgFormates, videoFormates } from "@/components/media/Media";
-import { getAdminData } from "@/utilities/functions/getAdminData";
 import { set_media_items } from "@/redux_toolkit/features/indexSlice";
 import { SanityAssetDocument } from "next-sanity";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Image from "next/image";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
 import { getFileExtensionFromUrl } from "@/utilities/functions/getFileExtensionFromUrl";
-import { url } from "inspector";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { styled } from "@mui/material/styles";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
+
 const Page = () => {
   const dispatch = useAppDispatch();
   const [messageApi, contextHolder] = message.useMessage();
@@ -37,10 +51,12 @@ const Page = () => {
     []
   );
   const [assetUploading, setAssetUploading] = useState(false);
-  const onChageHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChageHandler = async (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setValidationError(undefined);
     setForm({ ...form, [e.target.name]: e.target.value });
-    const file = e.target.files;
+    const file = (e.target as any).files;
     if (file) {
       if (
         checkFileSize({ file: file[0], setValidationError }) &&
@@ -114,7 +130,7 @@ const Page = () => {
         setFormStatus("success");
         setForm({ caption: "", desc: "", filePath: "" });
         setUploadedAssets([]);
-        setValidationError(undefined)
+        setValidationError(undefined);
       } catch (error) {
         messageApi.error("unable to publish, try again later");
         setFormStatus("failed");
@@ -127,23 +143,25 @@ const Page = () => {
     }
   };
 
-  async function withUseEffect() {
-    if (session) {
-      await getAdminData({ dispatch, admin, session });
-      if (!meadia_items.length) {
-        getMediaItems({ dispatch, messageApi });
-      }
-    }
-  }
-  useEffect(() => {
-    withUseEffect();
-  }, [session]);
+  // useEffect(() => {
+  //   async function withUseEffect() {
+  //     if (session) {
+  //       await getAdminData({ dispatch, admin, session });
+  //       if (!meadia_items.length) {
+  //         getMediaItems({ dispatch, messageApi });
+  //       }
+  //     }
+  //   }
+  //   withUseEffect();
+  // }, [session]);
 
   if (!session) {
     return null;
   }
   return (
-    <div className={style.uploadMainDiv}>
+    <div
+      className={`flex justify-center items-start bg-slate-600 h-screen w-screen py-2`}
+    >
       {contextHolder}
       {(formStatus === "uploading" || assetUploading) && (
         <div className={`${style.uploadingModal}`}>
@@ -152,105 +170,107 @@ const Page = () => {
           </Box>
         </div>
       )}
-      <div className={style.chiledOfUploadMainDiv}>
-        <form onSubmit={(e) => onSubmitHandler(e)} className={`${style.form} `}>
-          <div>
-            <label htmlFor="caption">Caption</label>
-            <input
-              required
-              minLength={2}
-              id="caption"
-              name="caption"
-              type="text"
-              onChange={(e) => onChageHandler(e)}
-              value={form.caption}
-            />
-          </div>
+      <form
+        onSubmit={(e) => onSubmitHandler(e)}
+        className="bg-slate-400 rounded-md max-w-[600px] w-full p-5 flex justify-center items-center flex-col gap-2"
+      >
+        <TextField
+          className="w-full"
+          fullWidth
+          label="Caption"
+          required
+          id="caption"
+          name="caption"
+          type="text"
+          onChange={(e) => onChageHandler(e)}
+          value={form.caption}
+        />
+        <TextField
+          className="w-full"
+          required
+          type="text"
+          multiline
+          rows={2}
+          id="desc"
+          name="desc"
+          label="Description"
+          onChange={(e) => onChageHandler(e as any)}
+          value={form.desc}
+        />
 
-          <div>
-            <label htmlFor="desc">Description</label>
-            <textarea
-              minLength={6}
-              rows={2}
-              id="desc"
-              name="desc"
-              onChange={(e) => onChageHandler(e as any)}
-              value={form.desc}
-            />
-          </div>
-          {!!uploadedAssets.length && (
-            <div style={{ flexDirection: "row" }}>
-              {uploadedAssets.map((asset, i) => {
-                const type = getFileExtensionFromUrl(asset.url);
-                if (!type || !asset.url)
-                  return (
-                    <Paper style={{ height: "100px", width: "100px" }} key={i}>
-                      <p>error</p>
-                    </Paper>
-                  );
+        {!!uploadedAssets.length && (
+          <div className="flex justify-center items-center gap-2 flex-wrap">
+            {uploadedAssets.map((asset, i) => {
+              const type = getFileExtensionFromUrl(asset.url);
+              if (!type || !asset.url)
                 return (
-                  <Paper
-                    style={{
-                      height: "100px",
-                      width: "100px",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      overflow: "hidden",
-                    }}
-                    key={i}
-                  >
-                    <>
-                      {videoFormates.includes(type) && (
-                        <video
-                          controls
-                          src={asset.url}
-                          className=" max-h-[395px] rounded-md"
-                        />
-                      )}
-
-                      {imgFormates.includes(type) && (
-                        <Image
-                          src={asset.url}
-                          alt="post"
-                          width={1000}
-                          height={1000}
-                          className="h-auto w-auto"
-                        />
-                      )}
-                    </>
+                  <Paper style={{ height: "100px", width: "100px" }} key={i}>
+                    <p>error</p>
                   </Paper>
                 );
-              })}
-            </div>
-          )}
-          <div>
-            <label htmlFor="file">Upload File</label>
-            <input
+              return (
+                <Paper
+                  className="flex justify-center items-center h-[100px] w-[100px] rounded-sm"
+                  key={i}
+                >
+                  <>
+                    {videoFormates.includes(type) && (
+                      <video
+                        controls
+                        src={asset.url}
+                        className=" max-h-[395px] rounded-md"
+                      />
+                    )}
+
+                    {imgFormates.includes(type) && (
+                      <Image
+                        src={asset.url}
+                        alt="post"
+                        width={1000}
+                        height={1000}
+                        className="h-auto w-auto"
+                      />
+                    )}
+                  </>
+                </Paper>
+              );
+            })}
+          </div>
+        )}
+        <div className="w-full">
+          <Button
+            className="w-full"
+            component="label"
+            role={undefined}
+            variant="contained"
+            tabIndex={-1}
+            startIcon={<CloudUploadIcon />}
+          >
+            Upload file
+            <VisuallyHiddenInput
               required
               id="file"
               name="filePath"
               type="file"
               onChange={(e) => onChageHandler(e)}
               value={form.filePath}
-              accept="video/* ,image/png, image/jpeg, image/svg, image/gif"
             />
+          </Button>
+          {validationError &&
+            validationError.length > 0 &&
+            validationError?.map((error, i) => {
+              return (
+                <p className={style.validationError} key={i}>
+                  {error.message}
+                </p>
+              );
+            })}
+        </div>
 
-            {validationError &&
-              validationError.length > 0 &&
-              validationError?.map((error, i) => {
-                return (
-                  <p className={style.validationError} key={i}>
-                    {error.message}
-                  </p>
-                );
-              })}
-          </div>
-
-          <button type="submit" className={style.uploadButton}>
-            Publish
-          </button>
-        </form>
-      </div>
+        <Button type="submit" className={"w-full my-4"} variant="contained">
+          Publish
+        </Button>
+      </form>
     </div>
   );
 };

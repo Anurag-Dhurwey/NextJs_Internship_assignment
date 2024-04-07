@@ -85,13 +85,13 @@ const Navbar = () => {
               </button>
             )}
           {socketContext?.socket?.connected && (
-            <button onClick={() => socketContext.socket?.connect()}>
+            <button onClick={() => socketContext.socket?.disconnect()}>
               <CloudQueueRoundedIcon />
             </button>
           )}
           {!socketContext?.socket?.active &&
             !socketContext?.socket?.connected && (
-              <button onClick={() => socketContext?.socket?.disconnect()}>
+              <button onClick={() => socketContext?.socket?.connect()}>
                 <CloudOffRoundedIcon />
               </button>
             )}
