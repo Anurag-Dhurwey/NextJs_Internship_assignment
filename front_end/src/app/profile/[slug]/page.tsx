@@ -2,7 +2,7 @@
 import AdminProfile from "@/components/profiles/AdminProfile";
 import UsersProfile from "@/components/profiles/UsersProfile";
 import { useAppDispatch, useAppSelector } from "@/redux_toolkit/hooks";
-import { min_id_of_usr, profileSlugObjType } from "@/typeScript/basics";
+import {  profileSlugObjType } from "@/typeScript/basics";
 import { getAdminData } from "@/utilities/functions/getAdminData";
 // import { socketIoConnection } from "@/utilities/socketIo";
 import { message } from "antd";
