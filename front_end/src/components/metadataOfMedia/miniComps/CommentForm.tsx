@@ -4,10 +4,9 @@ import { set_media_items } from "@/redux_toolkit/features/indexSlice";
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import { IoMdSend } from "react-icons/io";
-import { comment_ref, media_Item } from "@/typeScript/basics";
+import { media_Item } from "@/typeScript/basics";
 import { message } from "antd";
 import { client } from "@/utilities/sanityClient";
-// import { v4 } from "uuid";
 import { getAdminData } from "@/utilities/functions/getAdminData";
 import { useSocketContext } from "@/context/socket";
 
@@ -16,7 +15,6 @@ const CommentForm = ({ meadia_item, setComments }: props) => {
   const dispatch = useAppDispatch();
   const admin = useAppSelector((state) => state.hooks.admin);
   const { data: session } = useSession();
-  // const media_Items = useAppSelector((state) => state.hooks.media_Items);
   const [form, setForm] = useState("");
   const [onSubmit, setOnsubmit] = useState<boolean>(false);
 
