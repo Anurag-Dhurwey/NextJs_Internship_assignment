@@ -5,7 +5,8 @@
     height: 80%;
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: flex-start;
+    row-gap: 20px;
     align-items: center;
     font-weight: bold;
     list-style: none;

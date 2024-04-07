@@ -15,11 +15,11 @@
 }
 
 @media (max-width: 720px) {
-  .nav .navRoutes ul {
+  .nav .navRoutes {
     display: none;
   }
   .nav {
-    padding: 3px 5px;
+    /* padding: 3px 5px; */
   }
 }
 
@@ -33,11 +33,6 @@
   }
 }
 
-@media (max-width: 720px) {
-  .LOGO {
-    padding-left: 75px;
-  }
-}
 
 .right {
   padding: 6px 6px;

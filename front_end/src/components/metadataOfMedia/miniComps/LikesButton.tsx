@@ -1,15 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { AiFillLike } from "react-icons/ai";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { useSession } from "next-auth/react";
 import { client } from "@/utilities/sanityClient";
 import { useAppDispatch, useAppSelector } from "@/redux_toolkit/hooks";
-import { set_media_items } from "@/redux_toolkit/features/indexSlice";
-import { like, like_ref, media_Item } from "@/typeScript/basics";
+import {  media_Item } from "@/typeScript/basics";
 import { message } from "antd";
-import { v4 as uuidv4 } from "uuid";
 import { getAdminData } from "@/utilities/functions/getAdminData";
 import { useSocketContext } from "@/context/socket";
+import { IconButton } from "@mui/material";
 
 const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
   const dispatch = useAppDispatch();
@@ -19,7 +18,7 @@ const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
   // const media_Items = useAppSelector((state) => state.hooks.media_Items);
   const [isLiked, setIsLiked] = useState<string | false | undefined>(undefined);
   const [totalLikes, setTotalLikes] = useState<number>();
-  const [api, setApi] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   async function like() {
     try {
@@ -60,7 +59,7 @@ const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
 
   const handleLikeButton = async () => {
     if (session?.user && isLiked != undefined) {
-      setApi(true);
+      setLoading(true);
 
       try {
         if (isLiked) {
@@ -76,7 +75,7 @@ const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
         console.error(error);
         message.error("Internal server error");
       } finally {
-        setApi(false);
+        setLoading(false);
       }
     } else {
       console.error("session not found");
@@ -119,27 +118,34 @@ const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
     socketContext?.on.unLike((id) => {
       if (id === meadia_item._id && totalLikes != undefined) {
         setTotalLikes((pre) => {
-          return pre! - 1});
+          return pre! - 1;
+        });
       }
     });
-    return ()=>{
-      socketContext?.offListners.like()
-      socketContext?.offListners.unLike()
-    }
-  }, [session, socketContext?.socket?.connected,socketContext?.on,socketContext?.offListners, meadia_item._id, totalLikes]);
+    return () => {
+      socketContext?.offListners.like();
+      socketContext?.offListners.unLike();
+    };
+  }, [
+    session,
+    socketContext?.socket?.connected,
+    socketContext?.on,
+    socketContext?.offListners,
+    meadia_item._id,
+    totalLikes,
+  ]);
 
   return (
     <>
-      {isLiked != undefined && (
-        <button
-          disabled={api}
-          onClick={() => handleLikeButton()}
-          className="text-2xl"
+      <IconButton
+          onClick={() => isLiked != undefined && !loading && handleLikeButton()}
+          aria-label="delete"
+          disabled={loading}
+          color="primary"
         >
-          <AiFillLike style={{ color: isLiked ? "blue" : "white" }} />
-        </button>
-      )}
-      {!!totalLikes && <p style={{ fontSize: "small" }}>{totalLikes}</p>}
+          <ThumbUpIcon style={{ color: isLiked ? "blue" : "white" }} />
+          {!!totalLikes && <p className="text-sm px-1">{totalLikes}</p>}
+        </IconButton>
     </>
   );
 };

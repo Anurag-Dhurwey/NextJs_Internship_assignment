@@ -4,12 +4,10 @@ import {
   session,
   admin,
   _ref,
-  usr_and_key_in_array,
 } from "@/typeScript/basics";
 import { set_Admin } from "@/redux_toolkit/features/indexSlice";
 interface states {
   dispatch: Function;
-  // set_Admin: (action: admin) => void;
   admin: admin;
   session: session;
   messageApi?: MessageInstance;
@@ -21,28 +19,26 @@ export const getAdminData = async ({
   session,
   messageApi,
 }: states) => {
-  if (session?.user?.email && session?.user?.name && session?.user?.image) {
+  if (session?.user?.email) {
     if (!admin?._id) {
       try {
         const res: Array<resType> = await client.fetch(
-          `*[(_type=="user" && email=="${session.user.email}")]{_type,_id,bio,desc,link,image}`
+          `*[(_type=="user" && email=="${session.user.email}")]{_type,name,_id,bio,desc,link,image}`
         );
         const user = res[0];
         if (user) {
-          const { _id, bio, desc, link } = user;
-          const obj={
-            _id: _id,
-            name: session.user.name,
+          // const { _id, bio, desc, link } = user;
+          const obj = {
+            _id: user._id,
             email: session.user.email,
-            image: user.image ? user.image : session.user.image,
-            bio: bio ? bio : undefined,
-            desc: desc ? desc : undefined,
-            link: link ? link : undefined,
-          }
-          dispatch(
-            set_Admin(obj)
-          );
-          return obj
+            name: session.user.name || user.name,
+            image: session.user.image || user.image,
+            bio: user.bio,
+            desc: user.desc,
+            link: user.link,
+          };
+          dispatch(set_Admin(obj));
+          return obj;
         }
       } catch (error) {
         console.error(error);
@@ -57,6 +53,7 @@ export const getAdminData = async ({
 };
 
 type resType = {
+  name?: string;
   _id: string;
   bio?: string;
   desc?: string;
@@ -64,5 +61,3 @@ type resType = {
   image?: string;
   _type: string;
 };
-
-

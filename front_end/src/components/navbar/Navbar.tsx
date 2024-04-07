@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { signIn, signOut } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import style from "./navbar.module.css";
 import { FaBars } from "react-icons/fa";
 import { useSession } from "next-auth/react";
@@ -13,6 +13,7 @@ import CloudQueueRoundedIcon from "@mui/icons-material/CloudQueueRounded";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useSocketContext } from "@/context/socket";
 import { route } from "@/typeScript/basics";
+import { Button } from "@mui/material";
 const Navbar = () => {
   const socketContext = useSocketContext();
   const nav: route[] = [
@@ -52,7 +53,7 @@ const Navbar = () => {
           )}
         </span>
 
-        <Link href={"/"} className={style.LOGO}>
+        <Link href={"/"}>
           <button>LOGO</button>
         </Link>
 
@@ -60,20 +61,17 @@ const Navbar = () => {
           <ul>
             {nav.map((nav, i) => {
               const { Icon, path } = nav;
+              if (nav.protected && !session) {
+                return null;
+              }
               return (
-                <li key={i}>
-                  <Link
-                    href={
-                      nav.protected
-                        ? session?.user
-                          ? `/${path}`
-                          : "/login"
-                        : `/${path}`
-                    }
-                  >
-                    {<Icon />}
-                  </Link>
-                </li>
+                <li key={path + i} className="w-full text-center bg-cyan-600 rounded-md">
+                <Button className="w-full">
+                  <Link href={`/${path}`} className=" flex justify-center items-center gap-2 text-white">
+                    {<Icon/>}{nav.title}
+                    </Link>
+                </Button>
+              </li>
               );
             })}
           </ul>
@@ -97,15 +95,7 @@ const Navbar = () => {
                 <CloudOffRoundedIcon />
               </button>
             )}
-          {/* <div className={style.dropdown_content}> */}
-          {session && (
-            <>
-              <button>
-                <Link href={`/profile/${slug}`}>Profile</Link>
-              </button>
-              <button onClick={() => signOut()}>Logout</button>
-            </>
-          )}
+
           {!session && (
             <>
               <button onClick={() => signIn()}>LogIn</button>
@@ -114,12 +104,8 @@ const Navbar = () => {
               </button>
             </>
           )}
-          {/* </div> */}
           {session && (
-            <Link
-              href={`/profile/${slug}`}
-              className={style.profile_icon}
-            >
+            <Link href={`/profile/${slug}`} className={style.profile_icon}>
               <span className=" uppercase font-extrabold text-2xl text-yellow-700">
                 {session?.user?.name?.slice(0, 1)}
               </span>

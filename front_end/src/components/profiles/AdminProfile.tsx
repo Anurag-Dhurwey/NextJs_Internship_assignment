@@ -8,6 +8,8 @@ import { client } from "@/utilities/sanityClient";
 import Image from "next/image";
 import { Media } from "@/components";
 import { getAdminData } from "@/utilities/functions/getAdminData";
+import { Button } from "@mui/material";
+import { signOut } from "next-auth/react";
 const AdminProfile = () => {
   const dispatch = useAppDispatch();
   const { data: session } = useSession();
@@ -45,7 +47,7 @@ const AdminProfile = () => {
   return (
     <div className={`${style.adminProfileParentDiv} gap-[10px]`}>
       <div
-        className={`${style.adminProfile_firstChildDiv} flex-col text-center bg-blue-400 lg:w-[800px] rounded-md `}
+        className={`${style.adminProfile_firstChildDiv} w-full flex-col text-center bg-blue-400 lg:w-[800px] rounded-md `}
       >
         <h3 className="w-full bg-blue-600 rounded-sm py-1">Profile</h3>
         <div className={`${style.adminProfile_firstChildDiv} p-5`}>
@@ -72,7 +74,9 @@ const AdminProfile = () => {
               <span>{email || session.user?.email}</span>
             </h4>
           </div>
+          
         </div>
+        <Button className="w-full text-center mb-1" variant="contained" onClick={() => signOut()} >LogOut</Button>
       </div>
       <div
         className={`${style.adminProfile_secondChildDiv} flex-col text-center bg-blue-400 lg:w-[800px] rounded-md`}
