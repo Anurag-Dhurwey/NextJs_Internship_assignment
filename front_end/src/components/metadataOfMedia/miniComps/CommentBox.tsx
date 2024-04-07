@@ -5,10 +5,8 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import style from "./commentBox.module.css";
 import { useSession } from "next-auth/react";
 import CommentForm from "./CommentForm";
-import { comment_ref, media_Item } from "@/typeScript/basics";
+import { media_Item } from "@/typeScript/basics";
 import { client } from "@/utilities/sanityClient";
-// import { set_media_items } from "@/redux_toolkit/features/indexSlice";
-// import { useAppDispatch, useAppSelector } from "@/redux_toolkit/hooks";
 import { message } from "antd";
 import { useSocketContext } from "@/context/socket";
 
