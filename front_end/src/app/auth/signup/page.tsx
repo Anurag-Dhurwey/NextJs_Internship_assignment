@@ -46,7 +46,7 @@ const SignUp = () => {
 
   useEffect(() => {
     function validateReq() {
-      !session && redirect("/");
+      !!session && redirect("/");
     }
     validateReq();
   }, [session]);

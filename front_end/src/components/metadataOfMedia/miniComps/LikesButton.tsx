@@ -9,13 +9,13 @@ import { message } from "antd";
 import { getAdminData } from "@/utilities/functions/getAdminData";
 import { useSocketContext } from "@/context/socket";
 import { IconButton } from "@mui/material";
+import { redirect } from "next/navigation";
 
 const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
   const dispatch = useAppDispatch();
   const socketContext = useSocketContext();
   const { data: session } = useSession();
   const admin = useAppSelector((state) => state.hooks.admin);
-  // const media_Items = useAppSelector((state) => state.hooks.media_Items);
   const [isLiked, setIsLiked] = useState<string | false | undefined>(undefined);
   const [totalLikes, setTotalLikes] = useState<number>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -79,35 +79,37 @@ const LikesButton = ({ meadia_item }: { meadia_item: media_Item }) => {
       }
     } else {
       console.error("session not found");
-      message.error("session not found");
+      redirect('/auth/signup')
     }
   };
 
-  async function withUseEffect() {
-    const like_count = await client.fetch(
-      `count(*[ _type == "likes" && post._ref =="${meadia_item._id}" ]._id)`
-    );
-
-    setTotalLikes(like_count);
-
-    await getAdminData({ dispatch, admin, session });
-    if (!session || !admin._id) {
-      setIsLiked(false);
-      return;
-    }
-    const doc = await client.fetch(
-      `*[_type == "likes" && post._ref == "${meadia_item._id}" && likedBy._ref == "${admin._id}"]{_id}`
-    );
-    if (doc.length) {
-      setIsLiked(doc[0]._id);
-    } else {
-      setIsLiked(false);
-    }
-  }
+ 
 
   useEffect(() => {
+    async function withUseEffect() {
+      const like_count = await client.fetch(
+        `count(*[ _type == "likes" && post._ref =="${meadia_item._id}" ]._id)`
+      );
+  
+      setTotalLikes(like_count);
+  
+      await getAdminData({ dispatch, admin, session });
+      if (!session || !admin._id) {
+        setIsLiked(false);
+        return;
+      }
+      const doc = await client.fetch(
+        `*[_type == "likes" && post._ref == "${meadia_item._id}" && likedBy._ref == "${admin._id}"]{_id}`
+      );
+      if (doc.length) {
+        setIsLiked(doc[0]._id);
+      } else {
+        setIsLiked(false);
+      }
+    }
+
     withUseEffect();
-  }, [meadia_item, session]);
+  }, [meadia_item, session,admin,dispatch]);
 
   useEffect(() => {
     socketContext?.on.like((id) => {
