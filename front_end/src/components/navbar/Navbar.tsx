@@ -11,6 +11,7 @@ import PersonSearchRoundedIcon from "@mui/icons-material/PersonSearchRounded";
 import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
 import CloudQueueRoundedIcon from "@mui/icons-material/CloudQueueRounded";
 import CircularProgress from "@mui/material/CircularProgress";
+import CloudDoneIcon from '@mui/icons-material/CloudDone';
 import { useSocketContext } from "@/context/socket";
 import { route } from "@/typeScript/basics";
 import { Button } from "@mui/material";
@@ -86,7 +87,7 @@ const Navbar = () => {
             )}
           {socketContext?.socket?.connected && (
             <button onClick={() => socketContext.socket?.disconnect()}>
-              <CloudQueueRoundedIcon />
+              <CloudDoneIcon className="text-green-900" />
             </button>
           )}
           {!socketContext?.socket?.active &&
@@ -98,10 +99,10 @@ const Navbar = () => {
 
           {!session && (
             <>
-              <button onClick={() => signIn()}>LogIn</button>
-              <button>
+              <Button className="text-center bg-cyan-600 text-white p-1" onClick={() => signIn()}>LogIn</Button>
+              <Button className="text-center bg-cyan-600 text-white p-1">
                 <Link href={`/auth/signup`}>SignUp </Link>
-              </button>
+              </Button>
             </>
           )}
           {session && (
